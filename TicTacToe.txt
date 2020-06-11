@@ -1,0 +1,114 @@
+from itertools import cycle
+def game_start():
+    game_size=int(input("enter the size of game" ))
+    game_board=[[0 for i in range(game_size)] for i in range(game_size)] 
+    players=[1,2]
+    cycled_list = cycle(iter(players))
+    game_display(game_board)
+    game_running=True
+    game1=game_board
+    while game_running:
+        current_player=next(cycled_list)
+        print(f"player {current_player}")
+        game_play(game1,current_player)
+        if game_winning_conditions(game1, current_player)==True:
+            game_running=False
+        count=0
+        for row in game1:
+            if all(row):
+                count+=1
+            if count==3:
+                print("The game ends in a draw")
+                game_running=False
+            
+    answer=input("want to play again ?(y/n) ")
+    if answer.lower()=="y":
+        game_start()
+    else:
+        print("The End")
+    
+
+
+def game_display(game_board):
+    game=game_board
+    for row in game:
+        print(row)
+
+def game_play(game_board,current_player):
+    try:
+        row=int(input("enter row where u want to play"))
+        col=int(input("enter col where u want to play"))
+        if game_board[row][col]==0:
+            game_board[row][col]=current_player
+            game_display(game_board)
+        else:
+            print("that position is already acquired")
+            print("try again in some other position")
+            game_display(game_board)
+            print(f"player {current_player}")
+            game_play(game_board,current_player)
+    except IndexError as ind:
+        print(f"you entered row or column no. bigger than the size of game_board. ({ind})")
+        print("try again")
+        game_display(game_board)
+        print(f"player {current_player}")
+        game_play(game_board,current_player)
+    except:
+        print("something went very wrong")
+        print("try again")
+        game_display(game_board)
+        print(f"player {current_player}")
+        game_play(game_board,current_player)
+
+def game_winning_conditions(game_board,current_player):
+    
+    def checkEqual(iterator):
+        return len(set(iterator)) <= 1
+
+    #vertical win
+    vertical=[]
+    for i in range(len(game_board)):
+        for row in game_board:
+            vertical.append(row[i])
+        if checkEqual(vertical)==False:vertical=[]
+        elif any(vertical)==False:vertical=[]
+        else:
+            print(f"Player {current_player} won vertically")
+            return True
+        
+
+    #horizontal win
+    for row in game_board:
+        if checkEqual(row) and all(row):
+            print(f"Player {current_player} won horizontally")
+            return True
+    
+    #diagonal win
+    #\
+    diags1=[]
+    for i in range(len(game_board)):
+        for j in range(len(game_board)):
+            if i==j:
+                diags1.append(game_board[i][j])
+    if checkEqual(diags1) and all(diags1):
+        print(f"Player {current_player} won diagonally (\)")
+        return True
+    #/
+    diags2=[]
+    x=[]
+    for i in range(len(game_board)):
+        x.append(i)
+    y=list(reversed(x))
+    for row,col in enumerate(y):
+        diags2.append(game_board[row][col])  
+    if checkEqual(diags2) and all(diags2):
+        print(f"Player {current_player} won diagonally (/)")
+        return True
+    return False
+        
+game_start()
+        
+       
+
+
+
